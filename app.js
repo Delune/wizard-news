@@ -1,15 +1,18 @@
 const express = require("express");
-const app = express();
 const morgan = require('morgan')
+const timeAgo = require('node-time-ago')
 const postBank = require('./postBank')
 
+const app = express();
 app.use(morgan('dev'))
 app.use(express.static('public'))
 
 
 app.get('/posts/:id', (req, res, next) => {
+
   const post = postBank.find(req.params.id)
 
+  // this will put out a new error for our error handler down below
   if (!post.id) {
     next(new Error(404))
   } else {
@@ -67,6 +70,7 @@ app.get('/posts', (req, res) => {
   res.send(html)
 })
 
+// this is waiting for a new Error object
 app.use(function (err, req, res, next) {
   console.error(err.message)
   if (err.message === 404) {
